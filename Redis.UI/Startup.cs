@@ -28,8 +28,8 @@ namespace Redis.UI
             services.AddScoped<IPhotosRepo, PhotosRepo>();
 
             string mongoConnectionString = this.Configuration.GetConnectionString("MongoConnectionStringLocal");
-            services.AddTransient(s => new PhotosMongo(mongoConnectionString, "Atman", "Photos"));
-            services.AddScoped<IPhotosMongo>(_ => new PhotosMongo(mongoConnectionString, "Atman", "Photos"));
+            services.AddTransient(s => new PhotosMongo(mongoConnectionString, "DummyData", "Photos"));
+            services.AddScoped<IPhotosMongo>(_ => new PhotosMongo(mongoConnectionString, "DummyData", "Photos"));
 
             services.AddStackExchangeRedisCache(options =>
             {
