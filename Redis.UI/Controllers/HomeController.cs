@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Redis.UI.DAL;
+using Redis.UI.Entities;
 using Redis.UI.Models;
 using System;
 using System.Collections.Generic;
@@ -14,25 +17,45 @@ namespace Redis.UI.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IPhotosRepo _photosRepo;
+        private readonly IPhotosMongo _mongoRepo;
+        private readonly IDistributedCache _distributedCache;
 
-        public HomeController(ILogger<HomeController> logger, IPhotosRepo photosRepo)
+        public HomeController(ILogger<HomeController> logger, IPhotosRepo photosRepo, IPhotosMongo mongoRepo, IDistributedCache distributedCache)
         {
             _logger = logger;
             _photosRepo = photosRepo;
+            _mongoRepo = mongoRepo;
+            _distributedCache = distributedCache;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> GetFromLink()
         {
-            var photos = await _photosRepo.getAllRedisAsync();
+            List<Photo> photos;
+            string cachedPhoto = await _distributedCache.GetStringAsync("Photo");
+            if (string.IsNullOrEmpty(cachedPhoto))
+            {
+                photos = await _photosRepo.getAllAsync();
+                if (photos is null) return View(photos);
+                await _distributedCache.SetStringAsync("Photo", JsonConvert.SerializeObject(photos));
+                return View(photos);
+            }
+            photos = JsonConvert.DeserializeObject<List<Photo>>(cachedPhoto);
             return View(photos);
         }
-
-        public async Task<IActionResult> Index2()
+        public async Task<IActionResult> GetFromMongo()
         {
-            var photos = await _photosRepo.getAllAsync();
+            List<Photo> photos;
+            string cachedPhoto = await _distributedCache.GetStringAsync("Photo");
+            if (string.IsNullOrEmpty(cachedPhoto))
+            {
+                photos = await _mongoRepo.GetPhotos();
+                if(photos is null) return View(photos);
+                await _distributedCache.SetStringAsync("Photo", JsonConvert.SerializeObject(photos));
+                return View(photos);
+            }
+            photos = JsonConvert.DeserializeObject<List<Photo>>(cachedPhoto);
             return View(photos);
         }
-
         public IActionResult Privacy()
         {
             return View();

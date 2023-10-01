@@ -12,29 +12,7 @@ using System.Threading.Tasks;
 namespace Redis.UI.DAL
 {
     public class PhotosRepo: IPhotosRepo
-    {
-        private readonly IDistributedCache _distributedCache;
-        public PhotosRepo(IDistributedCache distributedCache)
-        {
-            _distributedCache = distributedCache;
-        }
-        public async Task<List<Photo>> getAllRedisAsync()
-        {
-            string cachedPhoto = await _distributedCache.GetStringAsync("Photo");
-            List<Photo> photos;
-            if (string.IsNullOrEmpty(cachedPhoto))
-            {
-                photos = await getAllAsync();
-                if (photos is null)
-                {
-                    return photos;
-                }
-                await _distributedCache.SetStringAsync("Photo", JsonConvert.SerializeObject(photos));
-                return photos;
-            }
-            photos = JsonConvert.DeserializeObject<List<Photo>>(cachedPhoto);
-            return photos;
-        }
+    { 
         public async Task<List<Photo>> getAllAsync()
         {
             using (HttpClient client = new HttpClient())

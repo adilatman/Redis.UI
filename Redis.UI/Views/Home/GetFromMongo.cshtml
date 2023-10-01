@@ -18,14 +18,17 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>@item.id</td>
-            <td>@item.title</td>
-            <td>@item.url</td>
-            <td>@item.thumbnailUrl</td>
-            <td>@item.albumId</td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.id</td>
+                <td>@item.title</td>
+                <td>@item.url</td>
+                <td>@item.thumbnailUrl</td>
+                <td>@item.albumId</td>
+            </tr>
+        }
     </tbody>
 </table>
+
+

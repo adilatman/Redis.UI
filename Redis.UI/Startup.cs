@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Redis.UI.DAL;
+using Redis.UI.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,12 +26,18 @@ namespace Redis.UI
         {
             services.AddControllersWithViews();
             services.AddScoped<IPhotosRepo, PhotosRepo>();
+
+            string mongoConnectionString = this.Configuration.GetConnectionString("MongoConnectionStringLocal");
+            services.AddTransient(s => new PhotosMongo(mongoConnectionString, "Atman", "Photos"));
+            services.AddScoped<IPhotosMongo>(_ => new PhotosMongo(mongoConnectionString, "Atman", "Photos"));
+
             services.AddStackExchangeRedisCache(options =>
             {
                 string connection = Configuration.GetConnectionString("Redis");
                 //options.InstanceName = "Redis";
                 options.Configuration = connection;
             });
+            
             services.AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(20));
         }
 

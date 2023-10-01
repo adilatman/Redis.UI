@@ -12,6 +12,5 @@ namespace Redis.UI.Entities
         public string url { get; set; }
         public string thumbnailUrl { get; set; }
         public int albumId { get; set; }
-        public Album Album { get; set; }
     }
 }

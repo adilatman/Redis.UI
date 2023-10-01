@@ -8,7 +8,6 @@ namespace Redis.UI.DAL
 {
     public interface IPhotosRepo
     {
-        public Task<List<Photo>> getAllRedisAsync();
         public Task<List<Photo>> getAllAsync();
     }
 }
