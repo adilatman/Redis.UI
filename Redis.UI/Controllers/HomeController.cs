@@ -56,6 +56,19 @@ namespace Redis.UI.Controllers
             photos = JsonConvert.DeserializeObject<List<Photo>>(cachedPhoto);
             return View(photos);
         }
+        [HttpGet]
+        public async Task<IActionResult> AddMongo()
+        {
+            return View(new Photo());
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddMongo(Photo photo)
+        {
+            await _distributedCache.RemoveAsync("Photo");
+            _mongoRepo.Create(photo);
+            
+            return RedirectToAction("GetFromMongo");
+        }
         public IActionResult Privacy()
         {
             return View();
